@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <string.h>
+
+#define N 50
+#define K 20
+#define L 26
+
+void ordenarCaracteres(int contadorFrequencia[][2], char stringsOrdenadas[][K], int coluna)
+{
+    int aux[N][2] = {0};
+    int z = 0, caracterSubstituicao = (int)'A';
+    
+    for (int i = N; i > 0; i--)
+    {
+        for(int j = 0; j < L; j++)
+        {
+            if (contadorFrequencia[j][1] == i)
+            {
+                for(int y = 0; y < i; y++)
+                {
+                    aux[z][0] = contadorFrequencia[j][0];
+                    aux[z][1] = caracterSubstituicao;
+                    z++;
+                }
+                caracterSubstituicao++;
+            }
+        }
+    }
+    
+    for (int i = 0; i < N; i++)
+    {
+        for(int j = 0; j < N; j++)
+        {
+           if (stringsOrdenadas[i][coluna] == (char)aux[j][0])
+           {
+                stringsOrdenadas[i][coluna] = (char)aux[j][1];
+                break;
+           }
+        }
+    }
+}
+
+void inicializarContadores(int contadorFrequencia[][2])
+{
+    for (int i = (int)'A', j = 0; i <= (int)'Z'; i++, j++)
+    {
+        contadorFrequencia[j][0] = i;
+        contadorFrequencia[j][1] = 0;
+    }
+}
+
+void verificarFrequenciaCaracteres(char stringsAUX[][K])
+{
+    int contadorFrequencia[L][2] = {0};
+    char stringsOrdenadas[N][K] = {0};
+
+    for(int i=0, j=0; i < N; i++)
+    {
+        strcpy(stringsOrdenadas[i], stringsAUX[i]);
+    }
+    
+    inicializarContadores(contadorFrequencia);
+    
+    for(int i = 0; i < 10; i++)
+    {
+        for(int j = 0; j<N; j++)
+        {
+            for (int y = (int)'A', z = 0; y <= (int)'Z'; y++, z++)
+            {
+                if (stringsOrdenadas[j][i] == (char)y)
+                {
+                    contadorFrequencia[z][1] = contadorFrequencia[z][1] += 1;
+                    break;
+                }
+            }
+        }
+        ordenarCaracteres(contadorFrequencia, stringsOrdenadas, i);
+        inicializarContadores(contadorFrequencia);
+    }
+    
+    for(int i = 0; i<=N-1; i++)
+        printf("%s", stringsOrdenadas[i]);
+}
+
+void verificarString(char strings[][K],char stringsAUX[][K], int *stringsValidas)
+{
+    int contador;
+
+    for(int z = 0; z<= N - 1; z ++)
+    {
+        contador = 0;
+        if ((int) ((strlen(strings[z])) - 1) != 10)
+            continue;
+
+        for (int y = (int)'A'; y <= (int)'Z'; y++)
+        {
+            for(int i=0; strings[z][i]!=0;i++)
+            {
+                if(strings[z][i]==(char)y)
+                    contador++;
+            }
+        }
+
+        if (contador == 10)
+        {
+            *stringsValidas +=1;
+            strcpy(stringsAUX[z], strings[z]);
+        }
+    }
+}
+
+void pedirStrings(char strings[][K])
+{
+    for(int i = 0; i<N; i++)
+    {
+        fgets(strings[i], 20, stdin);
+    }
+}
+
+int main()
+{
+    char strings[N][K] = {0}, stringsAUX[N][K] = {0};
+    int stringsValidas = 0;
+
+    pedirStrings(strings);
+
+    verificarString(strings, stringsAUX, &stringsValidas);
+
+    printf("%d\n", stringsValidas);
+        
+    verificarFrequenciaCaracteres(stringsAUX);
+}
